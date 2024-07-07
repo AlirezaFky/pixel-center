@@ -1,0 +1,45 @@
+*, *::before, *::after
+{
+    font-family: Helvetica;
+    color: white;
+    outline: none;
+}
+
+body
+{
+    background-color: rgb(44, 44, 44);
+    margin: 0px;
+    padding: 0px;
+}
+
+.px-icon
+{
+    width: 100px;
+    margin: 5px;
+}
+
+.about-container
+{
+    /* border: 1px solid; */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 90vh;
+    padding: 10px;
+}
+
+.about-details
+{
+    /* flex-grow: 1; */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    margin: 12px;
+}
+
+.about-details > span
+{
+    margin-bottom: 5px;
+    font-size: 13px;
+}
