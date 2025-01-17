@@ -9,7 +9,7 @@ import paintBucketTool from "./Assets/paint-bucket-tool.png";
 import { filterRepeats } from './custom-modules/customModules';
 
 
-function Grid({ numberOfRows, numberOfColumns, tool, color, clearGrid, inkSize, save, getGrid })
+function Grid({ numberOfRows, numberOfColumns, tool, color, clearGrid, inkSize, save, getGrid, reverseGrid, moveUp, moveDown, moveLeft, moveRight })
 {
     // The only reason why this useState is not a constant, is to be accessable by other components.
     const [grid, setGrid] = useState([]);
@@ -21,8 +21,69 @@ function Grid({ numberOfRows, numberOfColumns, tool, color, clearGrid, inkSize, 
 
     useEffect(() =>
     {
-        if (clearGrid == true) setGrid([]);
+        if (clearGrid === true) setGrid([]);
     }, [clearGrid]);
+
+    ////  UNCOMMENT LATER
+
+    useEffect(() => 
+    {
+        if (reverseGrid === true)
+        {
+            // console.log(numberOfRows);
+            let new_grid = grid;
+
+            for (let j = 0; j < Math.ceil(numberOfColumns/2); j++)
+            {
+                for (let i = 0; i < numberOfRows; i++)
+                {
+                    let val1;
+                    let val2;
+
+                    val1 = new_grid[j + numberOfColumns * i];
+                    val2 = new_grid[(numberOfColumns * (i + 1) - 1) - j];
+
+                    console.log(`ij: ${j + numberOfColumns * i}`, `i-1 j: ${(numberOfColumns * (i + 1) - 1) - j}`);
+                    
+                    new_grid[j + numberOfColumns * i] = val2;
+                    new_grid[(numberOfColumns * (i + 1) - 1) - j] = val1;
+                }
+                // console.log("s")
+            }
+            
+            setGrid(new_grid);
+        }
+    }, [reverseGrid]);
+
+    // useEffect(() => 
+    // {
+    //     let new_grid = grid;
+
+    //     if (moveUp === true)
+    //     {
+    //         for (let i = 0; i < new_grid - 1; i++)
+    //         {
+    //             let value;
+    //             new_grid[i + 1] = new_grid[i];
+
+    //         }
+    //     }
+    //     else if (moveDown === true)
+    //     {
+
+    //     }
+    //     else if (moveLeft === true)
+    //     {
+
+    //     }
+    //     else if (moveRight === true)
+    //     {
+
+    //     }
+    //     else console.error("Something went wrong!");
+
+
+    // }, [moveUp, moveDown, moveLeft, moveRight]);
 
     if (save == true) getGrid("", grid);
 
@@ -50,6 +111,11 @@ function Grid({ numberOfRows, numberOfColumns, tool, color, clearGrid, inkSize, 
         return boardArray;
     }
 
+    // function createGrid2(number_of_rows, number_of_columns, condition1, condition2)
+    // {
+    //     let board = [];
+    // }
+
 
     function setDraw(e, index, event)
     {
@@ -59,6 +125,7 @@ function Grid({ numberOfRows, numberOfColumns, tool, color, clearGrid, inkSize, 
             let isScrubbing = (e.buttons & 1) === 1;
             if (isScrubbing == false) return;
         }
+        console.log(index);
 
 
         let newGrid = grid;
@@ -298,6 +365,11 @@ function App()
     const [inkSize, setInkSize] = useState(1);
 
     const [clearGrid, setClearGrid] = useState(false);
+    const [reverseGrid, setReverseGrid] = useState(false);
+    const [move_up, set_move_up] = useState(false);
+    const [move_down, set_move_down] = useState(false);
+    const [move_left, set_move_left] = useState(false);
+    const [move_right, set_move_right] = useState(false);
 
     const dataImage = useRef();
 
@@ -306,7 +378,25 @@ function App()
     useEffect(() =>
     { 
         if (clearGrid == true) setClearGrid(false);
-    }, [clearGrid])
+    }, [clearGrid]);
+
+    useEffect(() =>
+    { 
+        if (reverseGrid == true) setReverseGrid(false);
+    }, [reverseGrid]);
+
+    useEffect(() => 
+    {
+        set_move_up(false);
+        set_move_down(false);
+        set_move_left(false);
+        set_move_right(false);
+    }, [move_up, move_down, move_left, move_right]);
+
+    // useEffect(() =>
+    // { 
+    //     if (reverseGrid == true) setReverseGrid(false);
+    // }, [reverseGrid]);
 
     let numberOfRows = Math.floor(projectInfo.width);
     let numberOfColumns = Math.floor(projectInfo.height);
@@ -314,6 +404,11 @@ function App()
     function getGrid(e, grid)
     {
         setGrid(grid);
+    }
+
+    function load_file()
+    {
+
     }
 
     function createImage()
@@ -344,6 +439,8 @@ function App()
             }
         }
     }  
+
+
 
         
 
@@ -395,6 +492,7 @@ function App()
                             </div> <br /> <br /> <br /> <br />
 
                             <button className="save-as-image-btn" onClick={createImage}>Save Image</button>
+                            
                             <a ref={dataImage} style={{ display: "none" }}></a>
                         </div>
                     </div>
@@ -414,12 +512,19 @@ function App()
                         </div>
                     </div>
                     <div className="grid-container" id="grid-container">
-                        <Grid numberOfRows={numberOfRows} numberOfColumns={numberOfColumns} color={color} tool={tool} clearGrid={clearGrid} inkSize={inkSize < 1 ? 1 : isNaN(inkSize) == true ? 1 : Math.floor(inkSize)} getGrid={getGrid} save={save} />
+                        <Grid numberOfRows={numberOfRows} numberOfColumns={numberOfColumns} color={color} tool={tool} clearGrid={clearGrid} reverseGrid={reverseGrid} inkSize={inkSize < 1 ? 1 : isNaN(inkSize) == true ? 1 : Math.floor(inkSize)} getGrid={getGrid} save={save} moveUp={move_up} moveDown={move_down} moveLeft={move_left} moveRight={move_right} />
                     </div>
                     <div className="settings-container">
                         <div className="settings">
                             <button className="settings-btn" onClick={() => setClearGrid(true)}>Clear Grid</button>
                             <button className="settings-btn" onClick={() => setSave(true)}>Save as Image</button>
+                            {/* <button className="settings-btn" onClick={() => load_file()}>Load File</button> */}
+                            <button className="settings-btn" onClick={() => setReverseGrid(true)}>Reverse Image</button>
+                            <br />
+                            <button className="setting-btn" onClick={() => set_move_up(true)}>Move Up</button>
+                            <button className="setting-btn" onClick={() => set_move_down(true)}>Move Down</button>
+                            <button className="setting-btn" onClick={() => set_move_left(true)}>Move Left</button>
+                            <button className="setting-btn" onClick={() => set_move_right(true)}>Move Right</button>
                             <input type="color" value={color} onInput={(e) => setColor(e.target.value)} />
                             <div className="settings-section">
                                 <label style={{ alignSelf: "flex-start" }}>SECTION</label> <br />
